@@ -83,6 +83,7 @@ try:
 
     # Insert data into a MongoDB collection (will create if it doesn't exist)
     collection = db['News']
+    
     collection.insert_many(data_dict)
 
     print("DataFrame saved to MongoDB successfully.")
