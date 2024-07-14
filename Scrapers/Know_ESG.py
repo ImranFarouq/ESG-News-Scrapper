@@ -34,6 +34,13 @@ def scroll_to_bottom():
 
 
 try:
+    from pymongo import MongoClient
+
+    # Create a connection to the MongoDB server
+    client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
+
+    # Connect to a specific database (will create if it doesn't exist)
+    db = client['ESG_News']
         
     import time
 
@@ -140,6 +147,15 @@ try:
     # df_knnow_Esg = df_knnow_Esg.loc[(df_knnow_Esg['Date'] >= '2024-06-01')
     #                      & (df_knnow_Esg['Date'] <= '2025-12-31')]
     df_knnow_Esg 
+        # Convert DataFrame to dictionary
+    data_dict = df_knnow_Esg.to_dict("records")
+
+    # Insert data into a MongoDB collection (will create if it doesn't exist)
+    collection = db['News']
+    collection.insert_many(data_dict)
+
+    print("DataFrame saved to MongoDB successfully.")
+
     print('Success')
     
 except Exception as e:

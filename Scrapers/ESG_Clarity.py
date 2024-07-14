@@ -20,6 +20,13 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 try:
+    from pymongo import MongoClient
+
+    # Create a connection to the MongoDB server
+    client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
+
+    # Connect to a specific database (will create if it doesn't exist)
+    db = client['ESG_News']
 
     url = 'https://esgclarity.com/asia/news-asia/'
 
@@ -53,8 +60,17 @@ try:
     #                      & (df_esg_clarity['Date'] <= '2024-12-31')]
     df_esg_clarity
 
-    # soup
+        # Convert DataFrame to dictionary
+    data_dict = df_esg_clarity.to_dict("records")
+
+    # Insert data into a MongoDB collection (will create if it doesn't exist)
+    collection = db['News']
+    collection.insert_many(data_dict)
+
+    print("DataFrame saved to MongoDB successfully.")
+
     print('Success')
-    
+    # soup
+
 except Exception as e:
     print('Error:', str(e))
