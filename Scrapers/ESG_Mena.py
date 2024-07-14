@@ -20,48 +20,52 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 
-    
-news = []
+try:
 
-for i in range(1,15):
-    try:
-        url = f'https://esgmena.com/2024/06/page/{i}'
+    news = []
 
-        response = requests.get(url)
+    for i in range(1,15):
+        try:
+            url = f'https://esgmena.com/2024/06/page/{i}'
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+            response = requests.get(url)
 
-        titles = soup.find_all('li', class_='list-post pclist-layout')
+            soup = BeautifulSoup(response.content, 'html.parser')
 
-        for title in titles:
-            
-            heading = title.find('h2', 'penci-entry-title entry-title grid-title').text.strip()
-            date = title.find('span', 'otherl-date').text.strip()
-            try:
-                description = title.find('div', 'item-content entry-content').text.strip()
-            except:
-                description = ''
+            titles = soup.find_all('li', class_='list-post pclist-layout')
+
+            for title in titles:
                 
-            link = title.find('div', 'thumbnail').a['href']
-            image_link = title.find('div', 'thumbnail').a['data-bgset']
+                heading = title.find('h2', 'penci-entry-title entry-title grid-title').text.strip()
+                date = title.find('span', 'otherl-date').text.strip()
+                try:
+                    description = title.find('div', 'item-content entry-content').text.strip()
+                except:
+                    description = ''
+                    
+                link = title.find('div', 'thumbnail').a['href']
+                image_link = title.find('div', 'thumbnail').a['data-bgset']
 
-            news.append([heading, description, date, link, image_link])
+                news.append([heading, description, date, link, image_link])
 
-    except Exception as e:
-        # print(e)
-        pass
+        except Exception as e:
+            # print(e)
+            pass
 
-df = pd.DataFrame(news, columns=['Title','Description', 'Date', 'Link', 'Image_URL' ])
+    df = pd.DataFrame(news, columns=['Title','Description', 'Date', 'Link', 'Image_URL' ])
 
-date = []
-for i in df.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+    date = []
+    for i in df.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
-df['Date'] = date
-
-
-df['Source']= 'ESG Mena'
+    df['Date'] = date
 
 
-df
+    df['Source']= 'ESG Mena'
 
+    df
+
+    print('Success')
+    
+except Exception as e:
+    print('Error:', str(e))

@@ -43,56 +43,62 @@ chrome_options.add_argument("--start-maximized")  # Start with maximized window
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
-url = 'https://esgnews.bg/en/home-english/'
+try:
+        
+    url = 'https://esgnews.bg/en/home-english/'
 
-news= []
+    news= []
 
-driver.get(url)
-time.sleep(10)
-scroll_to_bottom()
+    driver.get(url)
+    time.sleep(10)
+    scroll_to_bottom()
 
-driver.find_element(By.XPATH, '//a[@data-load="Load More"]').click()
-time.sleep(3)
-# driver.find_element(By.CLASS_NAME, 'button').click()
-# time.sleep(5)
+    driver.find_element(By.XPATH, '//a[@data-load="Load More"]').click()
+    time.sleep(3)
+    # driver.find_element(By.CLASS_NAME, 'button').click()
+    # time.sleep(5)
 
-response = driver.page_source
-# find_element(By.CLASS_NAME, 'site-main')
+    response = driver.page_source
+    # find_element(By.CLASS_NAME, 'site-main')
 
-# div_blok
-soup = BeautifulSoup(response, 'html.parser')
-
-
-# titles = soup.find_all('div', 'jeg_postblock_content')
-titles = soup.find_all('article', 'jeg_post')
-
-# print(titles)
-for title in titles:
-    # print(title)
-    try:
-        image_link = title.find('div', 'thumbnail-container').img['src']
-        heading = title.find('h3', 'jeg_post_title').text.strip()
-        date = title.find('div', 'jeg_meta_date').text.strip()
-        description = title.find('div', 'jeg_post_excerpt').text.strip()
-        link =  title.find('h3', 'jeg_post_title').a['href']
-
-        # link = title.a['href']
-
-        news.append([heading, description, date, link, image_link])
-    except Exception as e:
-        print(e)
-        pass
+    # div_blok
+    soup = BeautifulSoup(response, 'html.parser')
 
 
-df_esg_news_bg = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
-date = []
-for i in df_esg_news_bg.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+    # titles = soup.find_all('div', 'jeg_postblock_content')
+    titles = soup.find_all('article', 'jeg_post')
 
-df_esg_news_bg['Date'] = date
-df_esg_news_bg['Souce'] = 'ESGnews.bg'
+    # print(titles)
+    for title in titles:
+        # print(title)
+        try:
+            image_link = title.find('div', 'thumbnail-container').img['src']
+            heading = title.find('h3', 'jeg_post_title').text.strip()
+            date = title.find('div', 'jeg_meta_date').text.strip()
+            description = title.find('div', 'jeg_post_excerpt').text.strip()
+            link =  title.find('h3', 'jeg_post_title').a['href']
 
-# df_esg_news_bg = df_esg_news_bg.loc[(df_esg_news_bg['Date'] >= '2024-06-01')
-#                      & (df_esg_news_bg['Date'] <= '2024-12-31')]
+            # link = title.a['href']
 
-df_esg_news_bg
+            news.append([heading, description, date, link, image_link])
+        except Exception as e:
+            print(e)
+            pass
+
+
+    df_esg_news_bg = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+    date = []
+    for i in df_esg_news_bg.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+
+    df_esg_news_bg['Date'] = date
+    df_esg_news_bg['Souce'] = 'ESGnews.bg'
+
+    # df_esg_news_bg = df_esg_news_bg.loc[(df_esg_news_bg['Date'] >= '2024-06-01')
+    #                      & (df_esg_news_bg['Date'] <= '2024-12-31')]
+
+    df_esg_news_bg
+    print('Success')
+    
+except Exception as e:
+    print('Error:', str(e))

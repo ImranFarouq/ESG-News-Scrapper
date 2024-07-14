@@ -33,59 +33,65 @@ def scroll_to_bottom():
         time.sleep(1)
 
 
-import time
+try:
+    import time
 
-# Setup Chrome options
-chrome_options = Options()
-chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    # Setup Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")  # Start with maximized window
 
-# Initialize the Chrome driver``
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
+    # Initialize the Chrome driver``
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
-news= []
+    news= []
 
-for i in range(1,10):
-    driver.get(f'https://www.esgtoday.com/category/esg-news/page/{i}/')
+    for i in range(1,10):
+        driver.get(f'https://www.esgtoday.com/category/esg-news/page/{i}/')
+        
+        time.sleep(10)
+        
+        response = driver.page_source
+        # find_element(By.CLASS_NAME, 'site-main')
+
+        # div_blok
+        soup = BeautifulSoup(response, 'html.parser')
+        # soup
+
+        div = soup.find('main', 'tf_clearfix')
+
+        titles = div.find_all('article', 'tf_clearfix')
+        # titles = div.find_all('div', 'post-content')
+
+
+
+        for title in titles:
+            # print(title)
+            try:
+                image_link = title.find('figure', 'post-image').a.img['src']
+                # print(image_link)
+                heading = title.find('h2', 'post-title entry-title').text.strip()
+                description = title.find('div', 'entry-content').text.strip()
+                date = title.find('time', 'post-date entry-date updated').text.strip()
+                link = title.h2.a['href']
+
+                news.append([heading, description, date, link, image_link])
+            except Exception as e:
+                print(e)
+
+    df_esg_tdy = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+
+    date = []
+
+    for i in df_esg_tdy.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+
+    df_esg_tdy['Date'] = date
+    df_esg_tdy['Source'] = 'ESG Today'
+
+    df_esg_tdy
+
+    print('Success')
     
-    time.sleep(10)
-    
-    response = driver.page_source
-    # find_element(By.CLASS_NAME, 'site-main')
-
-    # div_blok
-    soup = BeautifulSoup(response, 'html.parser')
-    # soup
-
-    div = soup.find('main', 'tf_clearfix')
-
-    titles = div.find_all('article', 'tf_clearfix')
-    # titles = div.find_all('div', 'post-content')
-
-
-
-    for title in titles:
-        # print(title)
-        try:
-            image_link = title.find('figure', 'post-image').a.img['src']
-            # print(image_link)
-            heading = title.find('h2', 'post-title entry-title').text.strip()
-            description = title.find('div', 'entry-content').text.strip()
-            date = title.find('time', 'post-date entry-date updated').text.strip()
-            link = title.h2.a['href']
-
-            news.append([heading, description, date, link, image_link])
-        except Exception as e:
-            print(e)
-
-df_esg_tdy = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
-
-date = []
-
-for i in df_esg_tdy.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
-
-df_esg_tdy['Date'] = date
-df_esg_tdy['Source'] = 'ESG Today'
-
-df_esg_tdy
+except Exception as e:
+    print('Error:', str(e))

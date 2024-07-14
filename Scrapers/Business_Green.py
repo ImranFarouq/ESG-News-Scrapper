@@ -19,53 +19,58 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+try:
 
-news = []
+    news = []
 
-for i in range(1,20):
-    url = f'https://www.businessgreen.com/type/news/page/{i}'
-
-
-    response = requests.get(url)
-
-    soup = BeautifulSoup(response.content, 'html.parser')
+    for i in range(1,20):
+        url = f'https://www.businessgreen.com/type/news/page/{i}'
 
 
-    titles = soup.find_all('div', class_='mb-2')
+        response = requests.get(url)
 
-    url = 'https://www.businessgreen.com'
-
-    for title in titles:
-        try:
-            heading = title.find('div', class_='platformheading').text.strip()
-            description = title.find('div', 'searchpara').text.strip() #.split('\n')[-1].strip()
-            
-            link = title.find('div', 'platformheading').h4.a['href']
-            link = url + link
-
-            date = title.find('div', 'published').text.strip()
-            # image_link = title.find('div', 'listing-left').div.a.img['src']
-            image_link = title.div.div.div.a.img['src']
+        soup = BeautifulSoup(response.content, 'html.parser')
 
 
-            news.append([heading, description, date, link, image_link])
+        titles = soup.find_all('div', class_='mb-2')
 
-        except Exception as e:
-            # print(e)
-            pass
+        url = 'https://www.businessgreen.com'
 
-df_business_green = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+        for title in titles:
+            try:
+                heading = title.find('div', class_='platformheading').text.strip()
+                description = title.find('div', 'searchpara').text.strip() #.split('\n')[-1].strip()
+                
+                link = title.find('div', 'platformheading').h4.a['href']
+                link = url + link
 
-df_business_green['Date'] = df_business_green['Date'].apply(lambda i : i.split('\n')[0])
+                date = title.find('div', 'published').text.strip()
+                # image_link = title.find('div', 'listing-left').div.a.img['src']
+                image_link = title.div.div.div.a.img['src']
 
-date = []
-for i in df_business_green.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
-df_business_green['Date'] = date
-df_business_green['Source'] = 'Business Green'
+                news.append([heading, description, date, link, image_link])
 
-# df_business_green = df_business_green.loc[(df_business_green['Date'] >= '2024-06-01')
-#                      & (df_business_green['Date'] <= '2024-12-31')]
+            except Exception as e:
+                # print(e)
+                pass
 
-df_business_green
+    df_business_green = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+
+    df_business_green['Date'] = df_business_green['Date'].apply(lambda i : i.split('\n')[0])
+
+    date = []
+    for i in df_business_green.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+
+    df_business_green['Date'] = date
+    df_business_green['Source'] = 'Business Green'
+
+    # df_business_green = df_business_green.loc[(df_business_green['Date'] >= '2024-06-01')
+    #                      & (df_business_green['Date'] <= '2024-12-31')]
+
+    df_business_green
+    print('Success')
+    
+except Exception as e:
+    print('Error:', str(e))

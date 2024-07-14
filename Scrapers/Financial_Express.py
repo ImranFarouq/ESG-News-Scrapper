@@ -33,61 +33,67 @@ def scroll_to_bottom():
         time.sleep(1)
 
 
-import time
+try:
+        
+    import time
 
-# Setup Chrome options
-chrome_options = Options()
-chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    # Setup Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")  # Start with maximized window
 
-# Initialize the Chrome driver``
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
+    # Initialize the Chrome driver``
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
-url = 'https://www.financialexpress.com/about/sustainability/'
+    url = 'https://www.financialexpress.com/about/sustainability/'
 
 
-news= []
+    news= []
 
-driver.get(url)
+    driver.get(url)
 
-for i in range(1,5):
-    time.sleep(10)
+    for i in range(1,5):
+        time.sleep(10)
 
-    response = driver.page_source
+        response = driver.page_source
+        
+        soup = BeautifulSoup(response, 'html.parser')
+        
+        titles = soup.find_all('article', 'post-has-image')
+
+        for title in titles:
+            try:
+                image_link = title.figure.a.img['src']
+                
+                heading = title.find('div', 'entry-title').text.strip()
+                description = title.find('div', 'hide-for-small-only post-excerpt').text.strip()
+                date =  title.find('div', 'entry-meta').text.strip()
+                link = title.find('div', 'entry-title').a['href']
+
+                news.append([heading, description, date, link, image_link])
+            except Exception as e:
+                # print(e)
+                pass
+        
+        load_more_btn = driver.find_element(By.CSS_SELECTOR, 'a.next.page-numbers').click()
+
+    df_financial_express = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+
+    df_financial_express['Date'] = df_financial_express['Date'].str.replace('Updated:', '')
+
+
+    date = []
+    for i in df_financial_express.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+
+    df_financial_express['Date'] = date
+    df_financial_express['Source'] = 'Financial Express'
+
+    # df_financial_express = df_financial_express.loc[(df_financial_express['Date'] >= '2024-06-01')
+    #                      & (df_financial_express['Date'] <= '2024-12-31')]
+
+    df_financial_express
+    print('Success')
     
-    soup = BeautifulSoup(response, 'html.parser')
-    
-    titles = soup.find_all('article', 'post-has-image')
-
-    for title in titles:
-        try:
-            image_link = title.figure.a.img['src']
-            
-            heading = title.find('div', 'entry-title').text.strip()
-            description = title.find('div', 'hide-for-small-only post-excerpt').text.strip()
-            date =  title.find('div', 'entry-meta').text.strip()
-            link = title.find('div', 'entry-title').a['href']
-
-            news.append([heading, description, date, link, image_link])
-        except Exception as e:
-            # print(e)
-            pass
-    
-    load_more_btn = driver.find_element(By.CSS_SELECTOR, 'a.next.page-numbers').click()
-
-df_financial_express = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
-
-df_financial_express['Date'] = df_financial_express['Date'].str.replace('Updated:', '')
-
-
-date = []
-for i in df_financial_express.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
-
-df_financial_express['Date'] = date
-df_financial_express['Source'] = 'Financial Express'
-
-# df_financial_express = df_financial_express.loc[(df_financial_express['Date'] >= '2024-06-01')
-#                      & (df_financial_express['Date'] <= '2024-12-31')]
-
-df_financial_express
+except Exception as e:
+    print('Error:', str(e))

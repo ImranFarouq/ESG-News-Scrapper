@@ -32,70 +32,75 @@ def scroll_to_bottom():
         # Adding a small delay to allow the page to load
         time.sleep(1)
 
+try:
 
-import time
+    import time
 
-# Setup Chrome options
-chrome_options = Options()
-chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    # Setup Chrome options
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")  # Start with maximized window
 
-# Initialize the Chrome driver``
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
+    # Initialize the Chrome driver``
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
 
-urls = ['https://esgnews.com/category/global-news/',
-        'https://esgnews.com/category/esg-reporting/',
-        'https://esgnews.com/category/environmental',
-        'https://esgnews.com/category/climate/',
-        'https://esgnews.com/category/energy/', 
-        'https://esgnews.com/category/sustainable-finance/', 
-        ]
+    urls = ['https://esgnews.com/category/global-news/',
+            'https://esgnews.com/category/esg-reporting/',
+            'https://esgnews.com/category/environmental',
+            'https://esgnews.com/category/climate/',
+            'https://esgnews.com/category/energy/', 
+            'https://esgnews.com/category/sustainable-finance/', 
+            ]
 
-news= []
+    news= []
 
-for url in urls:
+    for url in urls:
 
-    driver.get(url)  
+        driver.get(url)  
 
-    # Wait for the popup to appear (Adjust the time as necessary)
-    time.sleep(10)
+        # Wait for the popup to appear (Adjust the time as necessary)
+        time.sleep(10)
 
-    scroll_to_bottom()
+        scroll_to_bottom()
 
-    load_more_btn = driver.find_element(By.CLASS_NAME, 'ajax-load-more').click()
-    time.sleep(3)
+        load_more_btn = driver.find_element(By.CLASS_NAME, 'ajax-load-more').click()
+        time.sleep(3)
 
-    scroll_to_bottom()
+        scroll_to_bottom()
 
-    response = driver.page_source
+        response = driver.page_source
 
-    soup = BeautifulSoup(response, 'html.parser')
+        soup = BeautifulSoup(response, 'html.parser')
 
-    titles = soup.find_all('div', 'has-thumbnail')
+        titles = soup.find_all('div', 'has-thumbnail')
 
-    for title in titles:
+        for title in titles:
 
-        image_link = title.find('a' , 'tt-post-img custom-hover').img['src']
+            image_link = title.find('a' , 'tt-post-img custom-hover').img['src']
 
-        title = title.find('div', 'tt-post-info')
+            title = title.find('div', 'tt-post-info')
 
-        heading = title.find('a', 'tt-post-title c-h5').text.strip()
-        description = title.find('div', 'simple-text').text.strip()
-        date = title.find('span', 'tt-post-date').text.strip()
-        link = title.find('a', 'tt-post-title c-h5')['href']
+            heading = title.find('a', 'tt-post-title c-h5').text.strip()
+            description = title.find('div', 'simple-text').text.strip()
+            date = title.find('span', 'tt-post-date').text.strip()
+            link = title.find('a', 'tt-post-title c-h5')['href']
 
-        news.append([heading, description, date, link, image_link])
+            news.append([heading, description, date, link, image_link])
 
-df = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+    df = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
 
-date = []
-for i in df.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+    date = []
+    for i in df.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
-df['Date'] = date
-df['Source'] = 'ESG News'
+    df['Date'] = date
+    df['Source'] = 'ESG News'
 
-df = df.drop_duplicates('Title')
-# df = df[df['Date'] < '2024-06-30']
-df
+    df = df.drop_duplicates('Title')
+    # df = df[df['Date'] < '2024-06-30']
+    df
+    print('Success')
+    
+except Exception as e:
+    print('Error:', str(e))

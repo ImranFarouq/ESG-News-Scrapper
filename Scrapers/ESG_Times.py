@@ -19,37 +19,42 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-url = 'https://www.esgtimes.in/category/esg/'
-news = []
+try:
+    url = 'https://www.esgtimes.in/category/esg/'
+    news = []
 
-for i in range(1,3):
-    response = requests.get(url + f'page/{i}/')
+    for i in range(1,3):
+        response = requests.get(url + f'page/{i}/')
 
-    soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.content, 'html.parser')
 
-    titles = soup.find_all('div', class_='post-container')
+        titles = soup.find_all('div', class_='post-container')
 
-    for title in titles:
+        for title in titles:
 
-        image_link = title.find('div', 'post-thumbnail').img['src']
+            image_link = title.find('div', 'post-thumbnail').img['src']
 
-        title = title.find('div', 'post-content-container')
-        
-        heading = title.find('a', 'post-title').text.strip()
-        date = title.find('a', 'post-date').text.strip()
-        description = title.find('div', 'post-content').text.strip()
-        
-        news.append([heading, description, date, title.a['href'], image_link])
-        # news.append([title.text.strip(), url + title.a['href']])
-    # # titles
-df = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
+            title = title.find('div', 'post-content-container')
+            
+            heading = title.find('a', 'post-title').text.strip()
+            date = title.find('a', 'post-date').text.strip()
+            description = title.find('div', 'post-content').text.strip()
+            
+            news.append([heading, description, date, title.a['href'], image_link])
+            # news.append([title.text.strip(), url + title.a['href']])
+        # # titles
+    df = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
 
-date = []
-for i in df.itertuples():
-    date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+    date = []
+    for i in df.itertuples():
+        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
-df['Date'] = date
-df['Source'] = 'ESG Times'
-df
+    df['Date'] = date
+    df['Source'] = 'ESG Times'
+    df
 
-# soup
+    # soup
+    print('Success')
+    
+except Exception as e:
+    print('Error:', str(e))
