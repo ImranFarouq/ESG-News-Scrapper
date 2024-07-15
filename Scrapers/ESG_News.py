@@ -33,13 +33,13 @@ def scroll_to_bottom():
         time.sleep(1)
 
 try:
-    from pymongo import MongoClient
+    # from pymongo import MongoClient
 
-    # Create a connection to the MongoDB server
-    client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
+    # # Create a connection to the MongoDB server
+    # client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
 
-    # Connect to a specific database (will create if it doesn't exist)
-    db = client['ESG_News']
+    # # Connect to a specific database (will create if it doesn't exist)
+    # db = client['ESG_News']
 
     import time
 
@@ -106,15 +106,15 @@ try:
 
     df = df.drop_duplicates('Title')
     # df = df[df['Date'] < '2024-06-30']
-    # print(df)
-        # Convert DataFrame to dictionary
-    data_dict = df.to_dict("records")
+    
+    from sqlalchemy import create_engine
 
-    # Insert data into a MongoDB collection (will create if it doesn't exist)
-    collection = db['News']
-    collection.insert_many(data_dict)
+    engine = create_engine('mysql+mysqldb://test:test%40123@13.201.128.161:3306/mysql')
 
-    print("DataFrame saved to MongoDB successfully.")
+    table_name = 'esg_news'
+    df.to_sql(table_name, engine, if_exists='append', index=False)
+
+    print("DataFrame saved to MySQL database successfully.")
 
     print('Success')
     

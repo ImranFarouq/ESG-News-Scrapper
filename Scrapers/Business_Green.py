@@ -20,13 +20,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 try:
-    from pymongo import MongoClient
 
-    # Create a connection to the MongoDB server
-    client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
-
-    # Connect to a specific database (will create if it doesn't exist)
-    db = client['ESG_News']
 
     news = []
 
@@ -78,15 +72,14 @@ try:
 
     df_business_green
 
-    # Convert DataFrame to dictionary
-    data_dict = df_business_green.to_dict("records")
+    from sqlalchemy import create_engine
 
-    # Insert data into a MongoDB collection (will create if it doesn't exist)
-    collection = db['News']
-    
-    collection.insert_many(data_dict)
+    engine = create_engine('mysql+mysqldb://test:test%40123@13.201.128.161:3306/mysql')
 
-    print("DataFrame saved to MongoDB successfully.")
+    table_name = 'esg_news'
+    df_business_green.to_sql(table_name, engine, if_exists='append', index=False)
+
+    print("DataFrame saved to MySQL database successfully.")
 
     print('Success')
     

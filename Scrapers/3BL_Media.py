@@ -33,14 +33,7 @@ def scroll_to_bottom():
         time.sleep(1)
 
 try:
-    from pymongo import MongoClient
-
-    # Create a connection to the MongoDB server
-    client = MongoClient("mongodb+srv://admin:imran123@cluster0.mz7q55x.mongodb.net/")
-
-    # Connect to a specific database (will create if it doesn't exist)
-    db = client['ESG_News']
-
+    
     import time
 
     # Setup Chrome options
@@ -75,7 +68,7 @@ try:
         
         wait = WebDriverWait(driver, 10)
 
-        for i in range(1,10):
+        for i in range(1,3):
             
             time.sleep(5)
             
@@ -123,14 +116,15 @@ try:
     #                     & (df_3blmedia['Date'] <= '2025-12-31')]
 
     df_3blmedia 
-    # Convert DataFrame to dictionary
-    data_dict = df_3blmedia.to_dict("records")
+    
+    from sqlalchemy import create_engine
 
-    # Insert data into a MongoDB collection (will create if it doesn't exist)
-    collection = db['News']
-    collection.insert_many(data_dict)
+    engine = create_engine('mysql+mysqldb://test:test%40123@13.201.128.161:3306/mysql')
 
-    print("DataFrame saved to MongoDB successfully.")
+    table_name = 'esg_news'
+    df_3blmedia.to_sql(table_name, engine, if_exists='append', index=False)
+
+    print("DataFrame saved to MySQL database successfully.")
 
     print('Success')
     
