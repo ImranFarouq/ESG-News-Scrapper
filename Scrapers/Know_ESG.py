@@ -168,7 +168,7 @@ try:
     cursor.execute(create_table_query)
 
     # Insert DataFrame records into MySQL table
-    for row in df.itertuples():
+    for row in df_knnow_Esg.itertuples():
         insert_query = f'''
             INSERT INTO esg_news (Title, Description, Date, Link, Image_URL)
             VALUES (%s, %s, %s, %s, %s)
