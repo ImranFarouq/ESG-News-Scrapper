@@ -150,16 +150,34 @@ try:
     
     from sqlalchemy import create_engine
 
-    import pymysql
-    # URL-encoded password
-    encoded_password = 'test%40123'
-    
-    # Create an engine to connect to the MySQL database using PyMySQL
-    engine = create_engine(f'mysql+pymysql://test:{encoded_password}@13.201.128.161:3306/mysql')
+    import MySQLdb
 
-    table_name = 'esg_news'
-    df_knnow_Esg.to_sql(table_name, engine, if_exists='append', index=False)
+    db = MySQLdb.connect(host='13.201.128.161', user='test', passwd='test@123', db='mysql')
+    cursor = db.cursor()
 
+    # Create table if it does not exist
+    create_table_query = '''
+        CREATE TABLE IF NOT EXISTS esg_news (
+            Title VARCHAR(255),
+            Description TEXT,
+            Date DATE,
+            Link VARCHAR(255),
+            Image_URL VARCHAR(255)
+        )
+    '''
+    cursor.execute(create_table_query)
+
+    # Insert DataFrame records into MySQL table
+    for row in df.itertuples():
+        insert_query = f'''
+            INSERT INTO esg_news (Title, Description, Date, Link, Image_URL)
+            VALUES (%s, %s, %s, %s, %s)
+        '''
+        cursor.execute(insert_query, (row.Title, row.Description, row.Date, row.Link, row.Image_URL))
+
+    # Commit changes and close connection
+    db.commit()
+    db.close()
     print("DataFrame saved to MySQL database successfully.")
 
     print('Success')
