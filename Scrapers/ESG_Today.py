@@ -106,6 +106,16 @@ try:
     db = MySQLdb.connect(host='13.201.128.161', user='test', passwd='test@123', db='mysql')
     cursor = db.cursor()
 
+   # Fetch existing data
+    query = 'SELECT * FROM esg_news'
+    existing_df = pd.read_sql(query, db)
+
+    # Combine new data with existing data
+    combined_df = pd.concat([existing_df, df_esg_tdy], ignore_index=True)
+
+    # Drop duplicates
+    combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
+
     # Create table if it does not exist
     create_table_query = '''
         CREATE TABLE IF NOT EXISTS esg_news (
@@ -113,18 +123,22 @@ try:
             Description TEXT,
             Date DATE,
             Link VARCHAR(255),
-            Image_URL VARCHAR(255)
+            Image_URL VARCHAR(255),
+            Source VARCHAR(255)
         )
     '''
     cursor.execute(create_table_query)
 
-    # Insert DataFrame records into MySQL table
-    for row in df_esg_tdy.itertuples():
+    # Truncate the table to remove old data
+    cursor.execute('TRUNCATE TABLE esg_news')
+
+    # Insert the cleaned DataFrame back into MySQL table
+    for row in combined_df.itertuples():
         insert_query = f'''
-            INSERT INTO esg_news (Title, Description, Date, Link, Image_URL)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO esg_news (Title, Description, Date, Link, Image_URL, Source)
+            VALUES (%s, %s, %s, %s, %s, %s)
         '''
-        cursor.execute(insert_query, (row.Title, row.Description, row.Date, row.Link, row.Image_URL))
+        cursor.execute(insert_query, (row.Title, row.Description, row.Date, row.Link, row.Image_URL, row.Source))
 
     # Commit changes and close connection
     db.commit()
