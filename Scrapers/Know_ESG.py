@@ -150,7 +150,12 @@ try:
     
     from sqlalchemy import create_engine
 
-    engine = create_engine('mysql+mysqldb://test:test%40123@13.201.128.161:3306/mysql')
+    import pymysql
+    # URL-encoded password
+    encoded_password = 'test%40123'
+    
+    # Create an engine to connect to the MySQL database using PyMySQL
+    engine = create_engine(f'mysql+pymysql://test:{encoded_password}@13.201.128.161:3306/mysql')
 
     table_name = 'esg_news'
     df_knnow_Esg.to_sql(table_name, engine, if_exists='append', index=False)
