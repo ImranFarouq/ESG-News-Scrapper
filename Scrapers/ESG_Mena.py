@@ -30,10 +30,14 @@ try:
     # db = client['ESG_News']
 
     news = []
+    date = datetime.today()
+    month  = f'0{date.month}'
 
     for i in range(1,15):
         try:
-            url = f'https://esgmena.com/2024/06/page/{i}'
+            url = f'https://esgmena.com/2024/{month}/page/{i}'
+
+            # url = f'https://esgmena.com/2024/06/page/{i}'
 
             response = requests.get(url)
 
@@ -79,15 +83,15 @@ try:
     db = MySQLdb.connect(host='13.201.128.161', user='test', passwd='test@123', db='mysql')
     cursor = db.cursor()
 
-    # Fetch existing data
-    query = 'SELECT * FROM esg_news'
-    existing_df = pd.read_sql(query, db)
+    # # Fetch existing data
+    # query = 'SELECT * FROM esg_news'
+    # existing_df = pd.read_sql(query, db)
 
-    # Combine new data with existing data
-    combined_df = pd.concat([existing_df, df], ignore_index=True)
+    # # Combine new data with existing data
+    # combined_df = pd.concat([existing_df, df], ignore_index=True)
 
-    # Drop duplicates
-    combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
+    # # Drop duplicates
+    # combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
 
     # Create table if it does not exist
     create_table_query = '''
@@ -103,10 +107,10 @@ try:
     cursor.execute(create_table_query)
 
     # Truncate the table to remove old data
-    cursor.execute('TRUNCATE TABLE esg_news')
+    # cursor.execute('TRUNCATE TABLE esg_news')
 
     # Insert the cleaned DataFrame back into MySQL table
-    for row in combined_df.itertuples():
+    for row in df.itertuples():
         insert_query = f'''
             INSERT INTO esg_news (Title, Description, Date, Link, Image_URL, Source)
             VALUES (%s, %s, %s, %s, %s, %s)

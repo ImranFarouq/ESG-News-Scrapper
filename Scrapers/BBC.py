@@ -108,15 +108,15 @@ try:
     db = MySQLdb.connect(host='13.201.128.161', user='test', passwd='test@123', db='mysql')
     cursor = db.cursor()
 
-    # Fetch existing data
-    query = 'SELECT * FROM esg_news'
-    existing_df = pd.read_sql(query, db)
+    # # Fetch existing data
+    # query = 'SELECT * FROM esg_news'
+    # existing_df = pd.read_sql(query, db)
 
-    # Combine new data with existing data
-    combined_df = pd.concat([existing_df, df_bbc], ignore_index=True)
+    # # Combine new data with existing data
+    # combined_df = pd.concat([existing_df, df_bbc], ignore_index=True)
 
-    # Drop duplicates
-    combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
+    # # Drop duplicates
+    # combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
 
     # Create table if it does not exist
     create_table_query = '''
@@ -132,10 +132,10 @@ try:
     cursor.execute(create_table_query)
 
     # Truncate the table to remove old data
-    cursor.execute('TRUNCATE TABLE esg_news')
+    # cursor.execute('TRUNCATE TABLE esg_news')
 
     # Insert the cleaned DataFrame back into MySQL table
-    for row in combined_df.itertuples():
+    for row in df_bbc.itertuples():
         insert_query = f'''
             INSERT INTO esg_news (Title, Description, Date, Link, Image_URL, Source)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -145,6 +145,11 @@ try:
     # Commit changes and close connection
     db.commit()
     db.close()
+
+    try:
+        driver.close()
+    except:
+        pass
 
     print("DataFrame saved to MySQL database successfully.")
 

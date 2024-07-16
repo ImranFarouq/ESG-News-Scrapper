@@ -5,3 +5,4 @@ pandas
 SQLAlchemy==1.4.39
 mysqlclient==2.2.4
 PyMySQL==1.1.1
+langdetect==1.0.9

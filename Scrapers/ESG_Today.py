@@ -107,14 +107,14 @@ try:
     cursor = db.cursor()
 
    # Fetch existing data
-    query = 'SELECT * FROM esg_news'
-    existing_df = pd.read_sql(query, db)
+    # query = 'SELECT * FROM esg_news'
+    # existing_df = pd.read_sql(query, db)
 
-    # Combine new data with existing data
-    combined_df = pd.concat([existing_df, df_esg_tdy], ignore_index=True)
+    # # Combine new data with existing data
+    # combined_df = pd.concat([existing_df, df_esg_tdy], ignore_index=True)
 
-    # Drop duplicates
-    combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
+    # # Drop duplicates
+    # combined_df.drop_duplicates(subset=['Title', 'Description', 'Date', 'Link', 'Image_URL'], inplace=True)
 
     # Create table if it does not exist
     create_table_query = '''
@@ -130,10 +130,10 @@ try:
     cursor.execute(create_table_query)
 
     # Truncate the table to remove old data
-    cursor.execute('TRUNCATE TABLE esg_news')
+    # cursor.execute('TRUNCATE TABLE esg_news')
 
     # Insert the cleaned DataFrame back into MySQL table
-    for row in combined_df.itertuples():
+    for row in df_esg_tdy.itertuples():
         insert_query = f'''
             INSERT INTO esg_news (Title, Description, Date, Link, Image_URL, Source)
             VALUES (%s, %s, %s, %s, %s, %s)
