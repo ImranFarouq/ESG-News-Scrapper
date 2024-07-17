@@ -71,11 +71,13 @@ try:
     # # titles
     df = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
     
-    date = []
-    for i in df.itertuples():
-        date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
+    # date = []
+    # for i in df.itertuples():
+    #     date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
-    df['Date'] = date
+    df['Date'] = pd.to_datetime(df['Date'], format="%d-%m-%y").dt.strftime("%Y-%m-%d")
+
+    # df['Date'] = date
     df['Source']= 'GTR View'
 
     df
