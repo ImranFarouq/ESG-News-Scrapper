@@ -120,5 +120,12 @@ try:
 
     print('Success')
     
+    from datetime import datetime
+
+    print('Source: SCMP')
+    
+    today = datetime.now().strftime('%d-%b-%y,%I:%M %p')
+    print(today)
+    
 except Exception as e:
     print('Error:', str(e))

@@ -109,6 +109,13 @@ try:
 
     print('Success')
     # soup
+    from datetime import datetime
+
+    print('Source: ESG Clarity')
+    
+    today = datetime.now().strftime('%d-%b-%y,%I:%M %p')
+    print(today)
+    
 
 except Exception as e:
     print('Error:', str(e))

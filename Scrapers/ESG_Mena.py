@@ -124,6 +124,13 @@ try:
     print("DataFrame saved to MySQL database successfully.")
 
     print('Success')
+    from datetime import datetime
+
+    print('Source: ESg Mena')
+    
+    today = datetime.now().strftime('%d-%b-%y,%I:%M %p')
+    print(today)
+    
 
     
 except Exception as e:
