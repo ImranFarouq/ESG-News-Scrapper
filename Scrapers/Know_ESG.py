@@ -82,7 +82,7 @@ try:
             print(e)
             pass
 
-    for i in range(2,10):
+    for i in range(2,4):
         driver.get(f'https://www.knowesg.com/environment/{i}/')
         time.sleep(10)
         response = driver.page_source
@@ -127,7 +127,33 @@ try:
             date = soup.find('div', 'font-normal text-xs mt-4 text-neutral-4').time.text
 
             description = soup.find('div', 'mt-9 text-neutral-6 text-lg prose prose-sm 2xl:prose-lg max-w-none tracking-wide sourceserif').h2.text
+           
+            if 'Key Takeaways' in description:
+                try:
+                    description = soup.find('div', 'mt-9 text-neutral-6 text-lg prose prose-sm 2xl:prose-lg max-w-none tracking-wide sourceserif')
+                    description = description.find_all('h2')
+                    description = description[1]
 
+                    h2 = description.find('a')
+                    
+                    if h2:
+                        description = description.text
+                        pass
+                    else:
+                        description = soup.find('div', 'mt-9 text-neutral-6 text-lg prose prose-sm 2xl:prose-lg max-w-none tracking-wide sourceserif')
+                        description = description.find_all('p')
+                        d = ''
+                        for i in description[:3]:
+                            d += str(i.text)
+                        description = d 
+                except:
+                        description = soup.find('div', 'mt-9 text-neutral-6 text-lg prose prose-sm 2xl:prose-lg max-w-none tracking-wide sourceserif')
+                        description = description.find_all('p')
+                        d = ''
+                        for i in description[:3]:
+                            d += str(i.text)
+                        description = d 
+                        
             articles.append([heading,  description, date, i.Link, image_link])
         except Exception as e:
             print(e)

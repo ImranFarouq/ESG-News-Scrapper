@@ -18,6 +18,7 @@ import dateparser
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import traceback
 
 def scroll_to_bottom():
     actions = ActionChains(driver)
@@ -99,7 +100,7 @@ try:
         date.append(dateparser.parse(i[3]).strftime("%Y-%m-%d"))
 
     df_esg_news_bg['Date'] = date
-    df_esg_news_bg['Souce'] = 'ESGnews.bg'
+    df_esg_news_bg['Source'] = 'ESGnews.bg'
 
     # df_esg_news_bg = df_esg_news_bg.loc[(df_esg_news_bg['Date'] >= '2024-06-01')
     #                      & (df_esg_news_bg['Date'] <= '2024-12-31')]
@@ -168,4 +169,5 @@ try:
     
     
 except Exception as e:
+    print(traceback.format_exc())
     print('Error:', str(e))

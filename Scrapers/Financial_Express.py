@@ -18,6 +18,7 @@ import dateparser
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import traceback
 
 def scroll_to_bottom():
     actions = ActionChains(driver)
@@ -59,7 +60,7 @@ try:
 
     driver.get(url)
 
-    for i in range(1,5):
+    for i in range(1,3):
         time.sleep(10)
 
         response = driver.page_source
@@ -163,4 +164,5 @@ try:
     
     
 except Exception as e:
+    print(traceback.format_exc())
     print('Error:', str(e))
