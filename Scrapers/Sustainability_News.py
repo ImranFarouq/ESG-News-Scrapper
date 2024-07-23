@@ -33,7 +33,9 @@ try:
 
     # Setup Chrome options
     chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    chrome_options.add_argument("--headless")
 
     # Initialize the Chrome driver``
     service = Service(ChromeDriverManager().install())

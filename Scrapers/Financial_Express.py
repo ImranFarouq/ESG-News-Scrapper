@@ -47,7 +47,9 @@ try:
 
     # Setup Chrome options
     chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    chrome_options.add_argument("--headless")
 
     # Initialize the Chrome driver``
     service = Service(ChromeDriverManager().install())
@@ -83,7 +85,7 @@ try:
                 # print(e)
                 pass
         
-        load_more_btn = driver.find_element(By.CSS_SELECTOR, 'a.next.page-numbers').click()
+        load_more_btn = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.next.page-numbers'))).click()
 
     df_financial_express = pd.DataFrame(news, columns=['Title', 'Description', 'Date', 'Link', 'Image_URL'])
 

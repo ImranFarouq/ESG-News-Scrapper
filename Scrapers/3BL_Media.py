@@ -38,7 +38,9 @@ try:
 
     # Setup Chrome options
     chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    chrome_options.add_argument("--headless")
 
     # Initialize the Chrome driver``
     service = Service(ChromeDriverManager().install())
@@ -56,12 +58,12 @@ try:
         driver.get(url)
         
         # Locate the dropdown element
-        dropdown_element = driver.find_element(By.ID, 'edit-field-fmr-primary-category-target-id')
-
+        dropdown_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'edit-field-fmr-primary-category-target-id')))
+        
         # Create a Select object
         select = Select(dropdown_element)
 
-        print('Scaraping data for' + option)
+        print('Scaraping data for ' + option)
         
         # Select the option 
         select.select_by_visible_text(option)

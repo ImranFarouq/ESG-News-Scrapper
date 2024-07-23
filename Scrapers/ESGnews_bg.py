@@ -38,7 +38,9 @@ import time
 
 # Setup Chrome options
 chrome_options = Options()
+chrome_options.add_argument("--window-size=1920,1080")
 chrome_options.add_argument("--start-maximized")  # Start with maximized window
+chrome_options.add_argument("--headless")
 
 # Initialize the Chrome driver``
 service = Service(ChromeDriverManager().install())
@@ -61,7 +63,8 @@ try:
     time.sleep(10)
     scroll_to_bottom()
 
-    driver.find_element(By.XPATH, '//a[@data-load="Load More"]').click()
+    load_more_btn = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, '//a[@data-load="Load More"]'))).click()
+    # driver.find_element(By.XPATH, '//a[@data-load="Load More"]').click()
     time.sleep(3)
     # driver.find_element(By.CLASS_NAME, 'button').click()
     # time.sleep(5)

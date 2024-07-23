@@ -46,7 +46,9 @@ try:
 
     # Setup Chrome options
     chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--start-maximized")  # Start with maximized window
+    chrome_options.add_argument("--headless")
 
     # Initialize the Chrome driver``
     service = Service(ChromeDriverManager().install())
@@ -54,7 +56,7 @@ try:
 
     news= []
 
-    for i in range(1,10):
+    for i in range(1,3):
         driver.get(f'https://www.esgtoday.com/category/esg-news/page/{i}/')
         
         time.sleep(10)
